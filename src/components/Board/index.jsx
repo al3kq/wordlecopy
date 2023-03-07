@@ -2,18 +2,24 @@ import { useEffect, useState } from "react";
 import Box from "../Box";
 import words from "../../words";
 
-const correct =
-  words[Math.floor(Math.random() * words.length - 1)].toUpperCase();
+// Declare a constant variable to store the random numbers
+const correctNumbers = [];
+
+// Generate 8 random numbers between 0 and 9 and add them to the array
+for (let i = 0; i < 10; i++) {
+  const randNumberAsString = Math.floor(Math.random() * 10).toString();
+  correctNumbers.push(randNumberAsString);
+}
 let defaulBoard = [];
 let defaultLetters = [];
 
-"abcdefghijklmnopqrstuvwxyz".split("").forEach((i) => {
+"0123456789".split("").forEach((i) => {
   defaultLetters[i] = "";
 });
 
 for (let i = 0; i < 6; i++) {
   defaulBoard.push([]);
-  for (let j = 0; j < 5; j++) {
+  for (let j = 0; j < 10; j++) {
     defaulBoard[i].push(["", ""]);
   }
 }
@@ -41,12 +47,12 @@ function Board(props) {
           });
         } else {
           setBoard((prevBoard) => {
-            if (col < 5) {
+            if (col < 10) {
               if (props.letter !== "ENTER") {
                 prevBoard[row][col][0] = props.letter;
                 setCol(col + 1);
               } else {
-                props.error("Words are 5 letters long!");
+                props.error("Words are 10 letters long!");
                 setTimeout(() => {
                   props.error("");
                 }, 1000);
@@ -55,46 +61,44 @@ function Board(props) {
               if (props.letter === "ENTER") {
                 let correctLetters = 0;
                 let word = "";
-                for (let i = 0; i < 5; i++) {
+                for (let i = 0; i < 10; i++) {
                   word += prevBoard[row][i][0];
                 }
-                if (words.includes(word.toLowerCase())) {
-                  for (let i = 0; i < 5; i++) {
-                    if (correct[i] === prevBoard[row][i][0]) {
-                      prevBoard[row][i][1] = "C";
-                      correctLetters++;
-                    } else if (correct.includes(prevBoard[row][i][0]))
-                      prevBoard[row][i][1] = "E";
-                    else prevBoard[row][i][1] = "N";
-                    setRow(row + 1);
-                    if (row === 5) {
-                      setLost(true);
-                      setTimeout(() => {
-                        setMessage(`It was ${correct}`);
-                      }, 750);
-                    }
-
-                    setCol(0);
-                    setLetters((prev) => {
-                      prev[board[row][i][0]] = board[row][i][1];
-                      return prev;
-                    });
-                  }
-                  setChanged(!changed);
-
-                  if (correctLetters === 5) {
-                    setWin(true);
+                let numCount = correctNumbers.reduce((accumulator, currentValue) => {
+                  return currentValue === word ? accumulator + 1 : accumulator;
+                }, 0);
+                for (let i = 0; i < 10; i++) {
+                  if (correct[i] === prevBoard[row][i][0]) {
+                    prevBoard[row][i][1] = "C";
+                    numCount--;
+                    correctLetters++;
+                  } else if (correct.includes(prevBoard[row][i][0]) && numCount > 0) {
+                    prevBoard[row][i][1] = "E";
+                    numCount--;
+                  } else prevBoard[row][i][1] = "N";
+                  setRow(row + 1);
+                  if (row === 5) {
+                    setLost(true);
                     setTimeout(() => {
-                      setMessage("You WIN");
+                      setMessage(`It was ${correct}`);
                     }, 750);
                   }
-                  return prevBoard;
-                } else {
-                  props.error("Word not in dictionary");
-                  setTimeout(() => {
-                    props.error("");
-                  }, 1000);
+
+                  setCol(0);
+                  setLetters((prev) => {
+                    prev[board[row][i][0]] = board[row][i][1];
+                    return prev;
+                  });
                 }
+                setChanged(!changed);
+
+                if (correctLetters === 10) {
+                  setWin(true);
+                  setTimeout(() => {
+                    setMessage("You WIN");
+                  }, 750);
+                }
+                return prevBoard;
               }
             }
             return prevBoard;

@@ -2,14 +2,12 @@ import { useEffect, useState } from "react";
 import BackspaceIcon from "@mui/icons-material/Backspace";
 
 const keyboard = {
-  line1: "QWERTYUIOP",
-  line2: "ASDFGHJKL",
-  line3: "ZXCVBNM",
+  line1: "0123456789"
 };
 
 let defaultLetters = [];
 
-"abcdefjhijklmnopqrstuvwxyz".split("").forEach((i) => {
+"0123456789".split("").forEach((i) => {
   defaultLetters[i] = "";
 });
 
@@ -56,16 +54,6 @@ function KeyBoard(props) {
     <div className="flex flex-col items-center w-100 pb-5">
       <div className="flex gap-1 my-0.5 w-fit">
         {keyboard.line1.split("").map((value, key) => (
-          <Key
-            getKey={keyHandler}
-            value={value}
-            key={key}
-            state={letters[value]}
-          />
-        ))}
-      </div>
-      <div className="flex gap-1 my-0.5 w-fit">
-        {keyboard.line2.split("").map((value, key) => (
           <Key
             getKey={keyHandler}
             value={value}
