@@ -17,7 +17,7 @@ let defaultLetters = [];
   defaultLetters[i] = "";
 });
 
-for (let i = 0; i < 6; i++) {
+for (let i = 0; i < 8; i++) {
   defaulBoard.push([]);
   for (let j = 0; j < 10; j++) {
     defaulBoard[i].push(["", ""]);
@@ -59,40 +59,58 @@ function Board(props) {
               }
             } else {
               if (props.letter === "ENTER") {
-                let correctLetters = 0;
+                const correctNumberDict = {};
+
+                for (let i = 0; i < correctNumbers.length; i++) {
+                  const element = correctNumbers[i];
+                  if (correctNumberDict[element]) {
+                    correctNumberDict[element]++;
+                  } else {
+                    correctNumberDict[element] = 1;
+                  }
+                }
+
+                let correctGuesses = 0;
                 let word = "";
                 for (let i = 0; i < 10; i++) {
                   word += prevBoard[row][i][0];
                 }
-                let numCount = correctNumbers.reduce((accumulator, currentValue) => {
-                  return currentValue === word ? accumulator + 1 : accumulator;
-                }, 0);
+                console.log(correctNumbers)
                 for (let i = 0; i < 10; i++) {
-                  if (correct[i] === prevBoard[row][i][0]) {
+                  console.log(prevBoard[row][i][0])
+                  if (correctNumbers[i] === prevBoard[row][i][0]) {
                     prevBoard[row][i][1] = "C";
-                    numCount--;
-                    correctLetters++;
-                  } else if (correct.includes(prevBoard[row][i][0]) && numCount > 0) {
+                    correctNumberDict[prevBoard[row][i][0]]--;
+                    correctGuesses++;
+                  }
+                }
+                for (let i = 0; i < 10; i++) {
+                  if (correctNumberDict.hasOwnProperty(prevBoard[row][i][0]) && prevBoard[row][i][1] !== "C" && correctNumberDict[prevBoard[row][i][0]] > 0) {
+                    console.log(prevBoard[row][i][1])
                     prevBoard[row][i][1] = "E";
-                    numCount--;
-                  } else prevBoard[row][i][1] = "N";
+                    correctNumberDict[prevBoard[row][i][0]]--;
+                  } else {
+                    if (prevBoard[row][i][1] !== "E" && prevBoard[row][i][1] !== "C") {
+                      prevBoard[row][i][1] = "N";
+                    }
+                  }
                   setRow(row + 1);
-                  if (row === 5) {
+                  if (row === 7) {
                     setLost(true);
                     setTimeout(() => {
-                      setMessage(`It was ${correct}`);
+                      setMessage(`It was ${correctNumbers}`);
                     }, 750);
                   }
 
                   setCol(0);
                   setLetters((prev) => {
-                    prev[board[row][i][0]] = board[row][i][1];
+                    prev[board[row][i][0]] = "";
                     return prev;
                   });
                 }
                 setChanged(!changed);
 
-                if (correctLetters === 10) {
+                if (correctGuesses === 10) {
                   setWin(true);
                   setTimeout(() => {
                     setMessage("You WIN");

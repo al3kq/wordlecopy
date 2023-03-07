@@ -53,18 +53,8 @@ function KeyBoard(props) {
   return (
     <div className="flex flex-col items-center w-100 pb-5">
       <div className="flex gap-1 my-0.5 w-fit">
-        {keyboard.line1.split("").map((value, key) => (
-          <Key
-            getKey={keyHandler}
-            value={value}
-            key={key}
-            state={letters[value]}
-          />
-        ))}
-      </div>
-      <div className="flex gap-1 my-0.5 w-fit">
         <Key value="ENTER" getKey={keyHandler} />
-        {keyboard.line3.split("").map((value, key) => (
+        {keyboard.line1.split("").map((value, key) => (
           <Key
             getKey={keyHandler}
             value={value}
